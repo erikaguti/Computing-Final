@@ -27,6 +27,16 @@ datadraft = pd.concat([Top50, NotTop50])
 
 datadraft['duplicates'] = datadraft.duplicated(subset=['id'])
 
+for i in range(0, len(notTop50songfeatures)):
+    if notTop50songfeatures[i] is None:
+        print(i)
+
+
+notTop50songs[232]
+
+sp.spotify.audio_features(notTop50songs[232])
+
+
 
 
 
