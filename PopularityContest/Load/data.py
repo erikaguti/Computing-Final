@@ -99,6 +99,13 @@ notTop50['Top50'] = 0
 pd.concat([songfeatures, notTop50]).to_csv('songfeatures.csv')
 
 
+class Spotify():
+    spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=config.id, client_secret=config.secret))
+
+    def getTop5(self, location):
+        'location must be '
+        self.spotify.category_playlists(category_id = 'toplists', country=location)
+
 
 
 
