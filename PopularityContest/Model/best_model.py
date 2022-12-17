@@ -30,7 +30,7 @@ def tuning(model, parameters, X_train, y_train):
     return chosen_model
 
 
-def fit_n_predict(X_train, X_test, y_train, model):
+def fit_n_predict(X_train, X_test, y_train, y_test, model):
     
     fitted_model = model
     fitted_model = fitted_model.fit(X_train, y_train)
