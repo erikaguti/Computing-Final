@@ -5,11 +5,9 @@ from spotipy.oauth2 import SpotifyClientCredentials
 
 class Spotify():
     def __init__(self,countrycode):
-        'country must be an ISO 3166-1 alpha-2 country code'
+        'country code must be an ISO 3166-1 alpha-2 country code'
         self.country = countrycode
         self.spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=config.id, client_secret=config.secret))
-        self.playlistsamplesize = 0
-        self.Top50 = []
     
     def getCategories(self):
         categories = self.spotify.categories(country=self.country, locale='en')
@@ -19,32 +17,33 @@ class Spotify():
                 categoryids.append(category['id'])
         return categoryids
     
-    def getPlaylists(self, categoryids, limit, top50 = False):
+    def getPlaylists(self, categoryids, limit = 20, top50 = False):
         playlistids = []
-        for id in categoryids:
-            playlist = self.spotify.category_playlists(category_id = id, country='ES', limit=5)
-            for playlist in playlist['playlists']['items']:
-                if top50:
-                    if 'Global' not in item['name'] and 'Top' in item['name'] and '50' in item['name']:
-                        playlistids.append(item['id'])
-                else:
-                    self.playlistsamplesize = self.playlistsamplesize + 1
-                    playlistids.append(playlist['id'])
+        try:
+            for id in categoryids:
+                playlists = self.spotify.category_playlists(category_id = id, country=self.country, limit = limit)
+                for playlist in playlists['playlists']['items']:
+                    if top50:
+                        if 'Global' not in playlist['name'] and 'Top' in playlist['name'] and '50' in playlist['name']:
+                            playlistids.append(playlist['id'])
+                    else:
+                        playlistids.append(playlist['id'])
+        except:
+                pass
         return playlistids
     
-    def getPlaylistTrackIDs(self, idlist, limit, Top50 = False):
-        for id in idlist:  
-            playlisttracks = self.spotify.playlist_items(idlist, fields='items(track.id)', limit = limit)
+    def getSongs(self, playlistids, limit = 50, Top50 = False):
         trackids = []
-        for track in playlisttracks['items']:
-            trackids.append(track['track']['id'])
-        if Top50:
-            self.Top50 = trackids
+        for playlistid in playlistids:  
+            playlisttracks = self.spotify.playlist_items(playlistid, fields='items(track.id)', limit = limit)
+            for track in playlisttracks['items']:
+                trackids.append(track['track']['id'])
         return trackids
     
     def getSongFeatures(self, trackids, offset = 0, limit = 100):
         features = []
         songs = len(trackids)
+        print("num songs:", songs)
         while songs > 100:
             features.extend(self.spotify.audio_features(self.idstringer(trackids[offset:limit])))
             offset = offset + 100
