@@ -47,7 +47,7 @@ def fit_n_predict(X_train, X_test, y_train, y_test, model):
 def conf_mat(y_test, model_predict):
     cm = confusion_matrix(y_test, model_predict, labels=[0,1])
     plt.figure(figsize=(10,7))
-    sns.heatmap(cm, cmap="seagreen", annot = True)
+    sns.heatmap(cm, cmap="crest", annot = True)
     plt.xlabel('Predicted')
     plt.ylabel('True')
 
