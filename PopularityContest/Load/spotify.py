@@ -21,7 +21,7 @@ class Spotify():
             print('Error in getting categories')
         return categoryids
     
-    def getPlaylists(self, categoryids, limit = 20, top50 = False):
+    def getPlaylists(self, categoryids, limit = 10, top50 = False):
         playlistids = []
         for id in categoryids:
             try:
@@ -52,7 +52,6 @@ class Spotify():
             features = []
             songs = len(trackids)
             while songs > 100:
-                print(offset, limit, songs)
                 features.extend(self.spotify.audio_features(self.idstringer(trackids[offset:limit])))
                 offset = offset + 100
                 limit = limit + 100
