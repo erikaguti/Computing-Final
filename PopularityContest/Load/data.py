@@ -3,108 +3,75 @@ import config
 import pandas as pd
 from spotipy.oauth2 import SpotifyClientCredentials
 
-
-spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=config.id, client_secret=config.secret))
-
-Top50 = spotify.category_playlists(category_id = 'toplists', country='ES')
-
-playlistids = []
-for item in Top50['playlists']['items']:
-    if 'Global' not in item['name'] and 'Top' in item['name'] and '50' in item['name']:
-        playlistids.append(item['id'])
-
-
-for playlistid in playlistids:  
-    playlisttracks = spotify.playlist_items(playlistid, fields='total, items(track.id)', limit = 50)
-
-
-trackids = []
-for track in playlisttracks['items']:
-    trackids.append(track['track']['id'])
-
-
-Top50features = spotify.audio_features(trackids)
-
-songfeatures = pd.DataFrame(Top50features)
-
-
-'''
-Audio analysis code draft (if we want to add more features)
-audioanalysis = {}
-for id in songfeatures.id:
-    audio = spotify.audio_analysis(id)
-    audioanalysis.update({id: audio['track']})
-
-audioanalysisdf = pd.DataFrame()
-for item in audioanalysis:
-    audioanalysis[item]
-'''
-
-
-categories = spotify.categories(country='ES', locale='en')
-
-categoryids = []
-for category in categories['categories']['items']:
-    if category['id'] != 'toplists':
-        print(category['name'], category['id'])
-        categoryids.append(category['id'])
-
-count = 0
-playlistids = []
-for id in categoryids:
-    playlist = spotify.category_playlists(category_id = id, country='ES', limit=5)
-    playlists = playlist['playlists']['items']
-    for item in playlists:
-        count = count + 1
-        playlistids.append(item['id'])
-
-tracks = []
-for id in playlistids:
-    playlisttracks = spotify.playlist_items(playlistid, fields='total, items(track.id)', limit = 5)
-    tracks.extend(playlisttracks['items'])
-
-ids = []
-for track in tracks:
-    ids.append(track['track']['id'])
-
-
-NotTop50features = []
-songs = len(ids)
-print(songs)
-offset = 0
-limit = 100
-while songs > 100:
-    NotTop50features.extend(spotify.audio_features(idstringer(ids[offset:limit])))
-    offset = offset + 100
-    songs = songs - 100
-    limit = limit + 100
-else:
-    NotTop50features.extend(spotify.audio_features(idstringer(ids[offset:limit+songs])))
-
-def idstringer(ids):
-    idstr = ''
-    for id in ids:
-        if id == ids[-1]:
-            idstr = idstr + id
-        else:
-            idstr = idstr + id + ','
-    return idstr
-
-
-songfeatures['Top50'] = 1
-notTop50 = pd.DataFrame(list(filter(lambda i:not(i == None), NotTop50features)))
-
-notTop50['Top50'] = 0
-
-pd.concat([songfeatures, notTop50]).to_csv('songfeatures.csv')
-
-
 class Spotify():
-    spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=config.id, client_secret=config.secret))
+    def __init__(self,countrycode):
+        'country must be an ISO 3166-1 alpha-2 country code'
+        self.country = countrycode
+        self.spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=config.id, client_secret=config.secret))
+        self.playlistsamplesize = 0
+        self.Top50 = []
+    
+    def getCategories(self):
+        categories = self.spotify.categories(country=self.country, locale='en')
+        categoryids = []
+        for category in categories['categories']['items']:
+            if category['id'] != 'toplists':
+                categoryids.append(category['id'])
+        return categoryids
+    
+    def getPlaylists(self, categoryids, limit, top50 = False):
+        playlistids = []
+        for id in categoryids:
+            playlist = self.spotify.category_playlists(category_id = id, country='ES', limit=5)
+            for playlist in playlist['playlists']['items']:
+                if top50:
+                    if 'Global' not in item['name'] and 'Top' in item['name'] and '50' in item['name']:
+                        playlistids.append(item['id'])
+                else:
+                    self.playlistsamplesize = self.playlistsamplesize + 1
+                    playlistids.append(playlist['id'])
+        return playlistids
+    
+    def getPlaylistTrackIDs(self, idlist, limit, Top50 = False):
+        for id in idlist:  
+            playlisttracks = self.spotify.playlist_items(idlist, fields='items(track.id)', limit = limit)
+        trackids = []
+        for track in playlisttracks['items']:
+            trackids.append(track['track']['id'])
+        if Top50:
+            self.Top50 = trackids
+        return trackids
+    
+    def getSongFeatures(self, trackids, offset = 0, limit = 100):
+        features = []
+        songs = len(trackids)
+        while songs > 100:
+            features.extend(self.spotify.audio_features(self.idstringer(trackids[offset:limit])))
+            offset = offset + 100
+            limit = limit + 100
+            songs = songs - 100
+        else:
+            features.extend(self.spotify.audio_features(self.idstringer(trackids[offset:limit+songs])))
+        return features
 
-    def getTop5(self, location):
-        'location must be '
-        self.spotify.category_playlists(category_id = 'toplists', country=location)
+    def idstringer(self, ids):
+        idstr = ''
+        for id in ids:
+            if id == ids[-1]:
+                idstr = idstr + id
+            else:
+                idstr = idstr + id + ','
+        return idstr
+
+    
+
+
+    
+
+
+
+
+
 
 
 
