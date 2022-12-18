@@ -1,6 +1,7 @@
 import spotify
 import pandas as pd
 
+'This code creates the base dataframe that will be used in our model'
 
 sp = spotify.Spotify('ES')
 
@@ -17,25 +18,16 @@ notTop50songs = sp.getSongs(notTop50playlists, 10)
 Top50songfeatures = sp.getSongFeatures(Top50songs)
 notTop50songfeatures = sp.getSongFeatures(notTop50songs)
 
+'Bring it all together'
 Top50 = pd.DataFrame(Top50songfeatures)
 NotTop50 = pd.DataFrame(notTop50songfeatures)
 
 Top50['Top50'] = 1
 NotTop50['Top50'] = 0
 
-datadraft = pd.concat([Top50, NotTop50])
+data = pd.concat([Top50, NotTop50])
 
-datadraft['duplicates'] = datadraft.duplicated(subset=['id'])
-
-for i in range(0, len(notTop50songfeatures)):
-    if notTop50songfeatures[i] is None:
-        print(i)
-
-
-notTop50songs[232]
-
-sp.spotify.audio_features(notTop50songs[232])
-
+data.drop_duplicates(subset='id', inplace=True, ignore_index=True)
 
 
 
