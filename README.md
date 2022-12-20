@@ -17,10 +17,10 @@ contains our feature engineering files
 - feature2.py Creates the features 'HipHop', 'Reggaeton', 'Pop', and 'House/Electro/Techno'
 - feature3.py Creates the features 'duration_s' and 'duration_m'
 
-Model
+Model:
 contains the files associated with our machine learning model. 
 - best_model.py functions for assessing model accuracy
 - split.py function for splitting the data into test and training sets
 
 
-
+test.ipynb is where we run the model. 
