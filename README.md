@@ -24,3 +24,5 @@ contains the files associated with our machine learning model.
 
 
 test.ipynb is where we run the model. 
+
+To start contributing clone our repo and contact us to set up your configuration file. 
