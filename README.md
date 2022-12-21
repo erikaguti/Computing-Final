@@ -26,3 +26,5 @@ contains the files associated with our machine learning model.
 test.ipynb is where we run the model. 
 
 To start contributing clone our repo and contact us to set up your configuration file. 
+
+If you add new functions to the spotify.py or make a new feature (by making a new feature file) please add a unit test to the associated unit test files.
