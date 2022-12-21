@@ -4,7 +4,7 @@ PopularityContest is a library for a machine learning model that predicts if a s
 
 Right now the model is specified for Spain. 
 
-The code is divided in three folders: Load, Process, and Model
+The code is divided in three folders: Load, Process, Model, and test.
 
 Load:
 contains our data acquistion files
@@ -22,8 +22,16 @@ contains the files associated with our machine learning model.
 - best_model.py functions for assessing model accuracy
 - split.py function for splitting the data into test and training sets
 
+test:
+contains the files used to test the preprocessing and feature engineering functions
+- Load/
+  - test_spotify.py tests the functions defined in the Spotify class
+- Process/
+  - test_features.py tests the feature creation functions
+
 
 test.ipynb is where we run the model. 
+
 
 To start contributing clone our repo and contact us to set up your configuration file. 
 
